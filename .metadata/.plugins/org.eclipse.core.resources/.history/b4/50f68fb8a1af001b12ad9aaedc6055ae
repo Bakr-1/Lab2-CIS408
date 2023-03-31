@@ -1,0 +1,76 @@
+import java.net.*;
+import java.io.*;
+
+public class TCPServerPart3 {
+	public static void main(String args[]) {
+		// args[0] = Backup IP address
+		try {
+
+			// 1- connect to Backup
+			System.out.println("Connecting to Backup ...");
+			Socket backupSocket = new Socket(args[0], 50001);
+			DataOutputStream outBackup = new DataOutputStream(backupSocket.getOutputStream());
+			System.out.println("Connecting to Backup ...");
+
+			// 2- Connect to clients
+			int serverPort = 50000; // the server port
+			ServerSocket listenSocket = new ServerSocket(serverPort);
+			System.out.println(" Primary Server is ready and waiting for requests... ");
+
+			while (true) {
+				Socket clientSocket = listenSocket.accept();
+				Connection c = new Connection(clientSocket, outBackup, 1, 0);
+
+			}
+		} catch (IOException e) {
+			System.out.println("Error Listen socket:" + e.getMessage());
+		}
+	}
+}
+
+class Connection extends Thread {
+	DataInputStream in;
+	DataOutputStream out, outBackup;
+	Socket clientSocket;
+	int start, sum;
+
+	public Connection(Socket aClientSocket, DataOutputStream outBackup, int start, int sum) {
+		try {
+			clientSocket = aClientSocket;
+			this.outBackup = outBackup;
+			this.start = start;
+			this.sum = sum;
+			in = new DataInputStream(clientSocket.getInputStream());
+			out = new DataOutputStream(clientSocket.getOutputStream());
+
+			this.start();
+		} catch (IOException e) {
+			System.out.println("Error Connection:" + e.getMessage());
+		}
+	}
+
+	public void run() {
+		try { // an echo server
+			for (int i = 1; i <= 100; i++) {
+				int data = in.readInt();
+				System.out.println(
+						"Recieved:" + data + " from:" + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
+				sum += data;
+				out.writeInt(sum);
+				// String msg = clientSocket.getInetAddress()+":"+clientSocket.getPort() +
+				// ","+sum; // read a line of data from the stream
+				outBackup.writeInt(sum);
+			}
+
+		} catch (EOFException e) {
+			System.out.println("Error EOF:" + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Error readline:" + e.getMessage());
+		} finally {
+			try {
+				clientSocket.close();
+			} catch (IOException e) {
+				/* close failed */}
+		}
+	}
+}

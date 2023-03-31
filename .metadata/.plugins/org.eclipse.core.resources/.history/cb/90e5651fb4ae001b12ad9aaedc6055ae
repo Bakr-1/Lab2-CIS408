@@ -1,0 +1,159 @@
+import java.net.*;
+import java.util.*;  
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.io.*;
+import java.util.stream.Collectors;  
+
+public class Part1TCPServer {
+	public static void main (String args[]) {
+		
+		//Event eventOne = new Event(001, "Sustainability", "Earth sustainability day", "NEC", "15th May 15:00", 360, "CEO", 600000);
+	//	Event eventTwo = new Event(002, "Green Day", "Earth Environment day", "Exhibition Centre", "25th May 13:00", 720, "UNICEF", 1200000);
+		      
+
+		
+		try{
+			int serverPort = 50000;// the server port
+			ServerSocket listenSocket = new ServerSocket(serverPort); 
+			while(true) {
+				System.out.println("Server is ready and waiting for requests ... ");
+				Socket clientSocket = listenSocket.accept();
+				Connection c = new Connection(clientSocket); // Thread
+			}
+      	} catch(IOException e) {System.out.println("Error Listen socket:"+e.getMessage());}
+		
+	}
+}
+
+class Connection extends Thread {
+	Hashtable<Object, Object> EMS1 =new Hashtable<>();    
+	Hashtable<Object, Object> EMSAD =new Hashtable<>(); 
+	Hashtable<Object, Object> EMSAA =new Hashtable<>();    
+	ArrayList<String> EMSD = new ArrayList<>();
+
+	Socket clientSocket;
+	DataInputStream in;
+	DataOutputStream out;
+	public Connection (Socket aClientSocket) {
+    	try {
+			clientSocket = aClientSocket;
+			in = new DataInputStream(clientSocket.getInputStream());
+			out = new DataOutputStream(clientSocket.getOutputStream());		
+			this.start();
+     	} catch(IOException e) {System.out.println("Error Connection:"+e.getMessage());}
+	}
+
+	public void run(){
+     	try { // an echo server
+     		int N=0;
+     		while(true) {
+     			int choice = in.read();	
+				if (choice == 1) {
+     				N++;
+	     			int newID = in.read();	
+	     			String newTitle = in.readUTF();	
+	     			String newDesc = in.readUTF();	
+	     			String newLoc = in.readUTF();	
+	     			String newSchedule = in.readUTF();	
+	     			int newAttendees = in.read();
+	     			String newVIP = in.readUTF();
+	     			double newbudget = in.readDouble();	
+	     			EMS EMSOne = new EMS(newID, newTitle , newDesc, newLoc, newSchedule, newAttendees, newVIP, newbudget); 
+	     			EMS1.put(newID,EMSOne);
+ 		            System.out.println(newID);  //output : spring, node
+	     			EMSD.add(newID,newSchedule);
+
+	     			
+
+	     			if(newLoc.equals("AD")) {
+	     				EMSAD.put(newID, EMSOne);
+	     			}
+	     			if(newLoc.equals("AA")) {
+	     				EMSAA.put(newID, EMSOne);
+	     			}
+
+
+		 		}
+				if (choice == 2) {
+	     			int DeleteID = in.read();	
+	     			//boolean check = arrlist.contains(DeleteID);
+	     			if (EMS1.containsKey(DeleteID)) {
+		     		EMS1.remove(DeleteID);
+	     			EMSAD.remove(DeleteID);
+	     			EMSAA.remove(DeleteID);	
+	     			EMSD.remove(DeleteID);	
+			 		out.writeUTF(EMS1.toString());
+	     			}
+		 			else {
+		 				out.writeUTF("wrong ID");
+		 			}
+
+				}
+				if (choice == 3) {
+	     			int x = in.read();
+	     			if(x==1) {
+		 				out.writeUTF(EMSAD.toString());
+
+	     			    }
+	     			if(x==2) {
+		 				out.writeUTF(EMSAA.toString());
+     			    }
+	     			}
+					
+		 		
+				if (choice == 4) {
+	     		//	ArrayList<Object> arrayS = new ArrayList<Object>( EMSd.values() );
+	     		//	arrayS.printEvents();
+					
+	 				String date = in.readUTF();
+	 				 List<String> result = getFilterOutput(EMSD, "mkyong");
+	 		        for (String temp : result) {
+	 		            System.out.println(temp);  //output : spring, node
+	 		        }	 		
+	 		        out.writeUTF(result.toString()+"ok");
+
+	 				
+	 				//if(!arrayS.contains("AA")){
+	     				
+	     		//	}
+	 				//out.writeUTF(arrayS.toString());
+	     		///	System.out.println("after");
+	     			System.out.println(EMS1);
+
+		 		}  if (choice == 0) {
+		 		    System.exit(0);
+
+
+		 		} }
+     		
+		
+			
+     	}catch (EOFException e){System.out.println("Error EOF:"+e.getMessage());
+     	} catch(IOException e) {System.out.println("Error readline:"+e.getMessage());
+     	} finally{ try {clientSocket.close();}catch (IOException e){/*close failed*/}}
+	}
+
+
+
+private static List<String> getFilterOutput(List<String> lines, String filter) {
+    List<String> result = new ArrayList<>();
+    for (String line : lines) {
+        if (filter.equals(line)) { // we dont like mkyong
+            result.add(line);
+        }
+    }
+    return result;
+}
+public void AddNumberToList(String Date) {
+List<Object> uniqueNumbers = new ArrayList<>();
+        uniqueNumbers.add(Date);
+     
+     
+    	 
+     }
+ }
+              

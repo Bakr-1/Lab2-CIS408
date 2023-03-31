@@ -1,0 +1,135 @@
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.io.*;
+
+public class Part1TCPServer {
+	public static void main (String args[]) {
+		
+		//Event eventOne = new Event(001, "Sustainability", "Earth sustainability day", "NEC", "15th May 15:00", 360, "CEO", 600000);
+	//	Event eventTwo = new Event(002, "Green Day", "Earth Environment day", "Exhibition Centre", "25th May 13:00", 720, "UNICEF", 1200000);
+		      
+
+		
+		try{
+			int serverPort = 50000;// the server port
+			ServerSocket listenSocket = new ServerSocket(serverPort); 
+			while(true) {
+				System.out.println("Server is ready and waiting for requests ... ");
+				Socket clientSocket = listenSocket.accept();
+				Connection c = new Connection(clientSocket); // Thread
+			}
+      	} catch(IOException e) {System.out.println("Error Listen socket:"+e.getMessage());}
+		
+	}
+}
+
+class Connection extends Thread {
+	Hashtable<Object, Object> EMS1 =new Hashtable<>();    
+	Hashtable<Object, Object> EMSAD =new Hashtable<>(); 
+	Hashtable<Object, Object> EMSAA =new Hashtable<>();    
+
+  //  ArrayList<Object> arrlist = new ArrayList<Object>();
+
+	Socket clientSocket;
+	DataInputStream in;
+	DataOutputStream out;
+	public Connection (Socket aClientSocket) {
+    	try {
+			clientSocket = aClientSocket;
+			in = new DataInputStream(clientSocket.getInputStream());
+			out = new DataOutputStream(clientSocket.getOutputStream());		
+			this.start();
+     	} catch(IOException e) {System.out.println("Error Connection:"+e.getMessage());}
+	}
+
+	public void run(){
+     	try { // an echo server
+     		int N=0;
+     		while(true) {
+     			int choice = in.read();	
+				if (choice == 1) {
+					
+	     			int newID = in.read();	
+	     			String newTitle = in.readUTF();	
+	     			String newDesc = in.readUTF();	
+	     			String newLoc = in.readUTF();	
+	     			String newSchedule = in.readUTF();	
+	     			int newAttendees = in.read();	
+	     			String newVIP = in.readUTF();	
+	     			int newbudget = in.read();	
+	     			
+	     			EMS EMSOne = new EMS(newID, newTitle , newDesc, newLoc, newSchedule, newAttendees, newVIP, newbudget); 
+	     			EMS1.put(newID,EMSOne);
+	     			
+	     			if(newLoc.equals("AD")) {
+	     				N++;
+	     				EMSAD.put(N+1, EMSOne);
+	     				
+	     			}
+	     			if(newLoc.equals("AA")) {
+	     				N++;
+	     				EMSAA.put(N+1, EMSOne);
+	     			}
+//	     			arrlist.add(newID,EMSOne);
+//	     			EMSOne.printEvents();
+	     			//System.out.println(Event1);
+	     			
+
+		 		}
+				if (choice == 2) {
+	     			int DeleteID = in.read();	
+	     			//boolean check = arrlist.contains(DeleteID);
+	     			
+//	     			if (check)
+//		     			arrlist.remove(DeleteID);
+//			 			out.writeUTF(arrlist.toString());
+//	     			}
+//		 			else {
+//		 				out.writeUTF("wrong ID");
+		 			}
+
+				  
+				if (choice == 3) {
+	     			String loc = in.readUTF();
+	     			if(loc.equals("AD")) {
+		 				out.writeUTF(EMSAD.toString());
+
+	     			    }
+	     			if(loc.equals("AA")) {
+		 				out.writeUTF(EMSAA.toString());
+     			    }
+	     			}
+					
+		 		
+				if (choice == 4) {
+//	     			System.out.println("before");
+//	     			ArrayList<Object> arrayS = new ArrayList<Object>( EMSd.values() );
+	     			//arrayS.printEvents();
+	 				//String date = in.readUTF();
+//	     			if(!arrayS.contains("AA")){
+//	     				
+//	     			}
+//	 				out.writeUTF(arrayS.toString());
+//	     			System.out.println("after");
+	     		//	System.out.println(Event1);
+
+		 		}  if (choice == 0) {
+		 		    System.exit(0);
+
+
+		 		} }
+     		
+		
+			
+     	}catch (EOFException e){System.out.println("Error EOF:"+e.getMessage());
+     	} catch(IOException e) {System.out.println("Error readline:"+e.getMessage());
+     	} finally{ try {clientSocket.close();}catch (IOException e){/*close failed*/}}
+	}
+}
+
+
+              

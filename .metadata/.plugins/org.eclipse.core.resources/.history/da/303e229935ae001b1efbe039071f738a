@@ -1,0 +1,126 @@
+import java.net.*;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+public class Part1TCPClient {
+	public static void main (String args[]) { 
+		  // args[0] = serverIP
+		Socket s = null;
+
+		try{
+			int serverPort = 50000;
+			s = new Socket (args[0], serverPort);
+			DataInputStream in = new DataInputStream(s.getInputStream());
+			DataOutputStream out = new DataOutputStream(s.getOutputStream());
+			while(true){
+				System.out.println("----------------------------------------------------------------------");
+				System.out.println("Event Management System");
+				System.out.println("----------------------------------------------------------------------");
+				System.out.println("1- Schedule a new event");
+				System.out.println("2- Cancel an existing one");
+				System.out.println("3- List all exiting events in one location");
+				System.out.println("4- Check if any event is scheduled on a particular date");
+				System.out.println("0- Quit");
+				System.out.println("----------------------------------------------------------------------");
+				System.out.println("Your choice? __");
+				Scanner sc= new Scanner(System.in);  
+				int choice= sc.nextInt();  
+				out.write(choice);
+				if (choice == 1) {
+					System.out.println("Enter your new event ID");
+					int newID= sc.nextInt();
+					
+					System.out.println("Enter your new event Title");
+					Scanner ss= new Scanner(System.in);  
+					String newTitle= ss.next();
+					
+					System.out.println("Enter your new event Description");
+					Scanner sd= new Scanner(System.in);  
+					String newDesc= sd.next();
+					
+					System.out.println("Enter your new event Location");
+					Scanner sl= new Scanner(System.in);  
+					String newLoc= sl.next();
+					
+					System.out.println("Enter your new event Schedule");
+					Scanner sscc= new Scanner(System.in);  
+					String newSchedule= sscc.next();
+					
+					System.out.println("Enter your new event number of Attendees");
+					Scanner sa= new Scanner(System.in);  
+					int newAttendees= sa.nextInt();
+					
+					System.out.println("Enter your new event VIP Guest");
+					Scanner sv= new Scanner(System.in);  
+					String newVIP= sv.next();
+					
+					System.out.println("Enter your new event Budget");
+					Scanner sb= new Scanner(System.in);  
+					int newbudget = sb.nextInt();
+					
+					
+					out.write(newID);
+					out.writeUTF(newTitle);
+					out.writeUTF(newDesc);
+					out.writeUTF(newLoc);
+					out.writeUTF(newSchedule);
+					out.write(newAttendees);
+					out.writeUTF(newVIP); 
+					out.write(newbudget);
+					
+					
+		 		} 
+				if (choice == 2) {
+		 			System.out.println("Enter the event ID you want to delete");
+					int DeleteID= sc.nextInt();
+					out.write(DeleteID);
+		 			System.out.println("Event is deleted!");
+		 			
+		 		} 
+		 		if (choice == 3) {
+					System.out.println("What location you want to see(AD,AA)");
+					String loc= sc.next();
+					out.writeUTF(loc);
+					
+					String allevents = in.readUTF();	
+		 			System.out.println("Events: ");
+		 			System.out.println(allevents);
+		 			
+		 		}  
+		 		if (choice == 4) {
+//				    out.write(choice);
+//		 			System.out.println("Enter the date dd/mm/yyyy");
+//		 			String date= sc.next();
+//					out.writeUTF(date);
+//					
+//					String alldate = in.readUTF();	
+//					System.out.println(alldate);
+		 			}
+		 		 if (choice == 0) {
+		 			 out.write(choice);
+		 			 System.exit(0);
+		 			}
+		 			}
+		 
+			
+			
+      	}catch (UnknownHostException e) {System.out.println("Error Socket:"+e.getMessage());
+      	}catch (EOFException e){System.out.println("Error EOF:"+e.getMessage());
+      	}catch (IOException e){System.out.println("Error readline:"+e.getMessage());
+      	}finally {if(s!=null) 
+			try {s.close(); 
+		  	}catch (IOException e) {System.out.println ("Error close:" + e.getMessage());}
+		}
+	}
+}
+//class sorting {
+//	public String compareTo(Part1TCPClient n ){  
+//		if(==)  
+//		return 0;  
+//		else if(age>st.age)  
+//		return 1;  
+//		else  
+//		return -1;  
+//		}  }
+
+                       

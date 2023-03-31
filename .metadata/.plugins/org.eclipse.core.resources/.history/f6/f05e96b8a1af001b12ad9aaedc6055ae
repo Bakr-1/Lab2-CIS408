@@ -1,0 +1,55 @@
+import java.net.*;
+import java.io.*;
+
+public class TCPClientPart3 {
+	public static void main(String args[]) throws InterruptedException {
+
+		// args[0] = primary IP
+		// args[1] = Backup IP
+		int serverPort = 50000;
+		String serverIP = args[0];
+		int start = 1;
+		int i = 0;
+
+		for (int r = 0; r < 2; r++) {
+			Socket s = null;
+			try {
+
+				s = new Socket(serverIP, serverPort);
+				DataInputStream in = new DataInputStream(s.getInputStream());
+				DataOutputStream out = new DataOutputStream(s.getOutputStream());
+				for (i = start; i < 100; i++) {
+					out.writeInt(i); // UTF is a string encoding
+					int sum = in.readInt();
+					System.out.println("Received: " + sum);
+					Thread.sleep(6000);
+					// String data = in.readUTF(); // read a line of data from the stream
+				}
+				break; // r = 99; // stop loop
+
+			} catch (UnknownHostException e) {
+				System.out.println("Error Socket:" + e.getMessage());
+			} catch (EOFException e) {
+				System.out.println("Primary is down. Reconnect to Backup ...");
+
+			} catch (IOException e) {
+				System.out.println("Primary is down. Reconnect to Backup ...");
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				if (s != null)
+					try {
+						s.close();
+
+					} catch (IOException e) {
+						System.out.println("Error close:" + e.getMessage());
+					}
+			}
+			serverIP = args[1];
+			serverPort = 50004;
+			start = i;
+			Thread.sleep(5000);
+		}
+	}
+}

@@ -1,0 +1,27 @@
+import java.net.*;
+import java.util.Hashtable;
+import java.io.*;
+
+public class TCPBackupServer {
+	public static void main (String args[]) {
+		try{
+			//1. Accept connection from primary
+			System.out.println("Waiting for Primary to connect ... ");
+			ServerSocket listenSocket = new ServerSocket(60000); 
+			Socket primarySocket = listenSocket.accept();
+			DataInputStream inPrimary = new DataInputStream(primarySocket.getInputStream());
+			System.out.println("Connection with Primary established ... ");
+			
+			Hashtable<String, Integer> clients = new Hashtable();
+			
+			while (true){
+				String msg= inPrimary.readUTF();
+				String [] data =msg.split(",");
+				clients.put(data[0], Integer.parseInt(data[1]));
+				
+				
+			}
+      	} catch(IOException e) {System.out.println("Server failed starting over");}
+	}
+}
+              

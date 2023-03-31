@@ -1,0 +1,33 @@
+import java.net.*;
+import java.util.Random;
+import java.io.*;
+
+public class TCPClientPart3 {
+	public static void main (String args[]) { 
+	  	// args[0] =  localhost
+		Socket s = null;
+
+		try{
+			int serverPort = 50000;
+			s = new Socket(args[0], serverPort);
+			DataInputStream in = new DataInputStream(s.getInputStream());
+			DataOutputStream out = new DataOutputStream(s.getOutputStream());
+			for (int i = 1; i<=100; i++) {
+				out.writeInt(i);
+				String result = in.readUTF();
+				System.out.println("Received: "+ result) ; 
+				Thread.sleep(2000);
+			}
+      	}catch (UnknownHostException e) {System.out.println("Error Socket:"+e.getMessage());
+      	}catch (EOFException e){
+      		System.out.println("Reconnect to Backup...");//take over
+      	}catch (IOException e){System.out.println("Error readline:"+e.getMessage());
+		}catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {if(s!=null) 
+			try {s.close(); 
+		  	}catch (IOException e) {System.out.println ("Error close:" + e.getMessage());} 
+		} 
+	}
+}                       

@@ -1,0 +1,102 @@
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.io.*;
+
+public class Part1TCPServer {
+	public static void main (String args[]) {
+		
+		//Event eventOne = new Event(001, "Sustainability", "Earth sustainability day", "NEC", "15th May 15:00", 360, "CEO", 600000);
+	//	Event eventTwo = new Event(002, "Green Day", "Earth Environment day", "Exhibition Centre", "25th May 13:00", 720, "UNICEF", 1200000);
+		      
+
+		
+		try{
+			int serverPort = 50000;// the server port
+			ServerSocket listenSocket = new ServerSocket(serverPort); 
+			while(true) {
+				System.out.println("Server is ready and waiting for requests ... ");
+				Socket clientSocket = listenSocket.accept();
+				Connection c = new Connection(clientSocket); // Thread
+			}
+      	} catch(IOException e) {System.out.println("Error Listen socket:"+e.getMessage());}
+		
+	}
+}
+
+class Connection extends Thread {
+	Hashtable<Object, Object> Event1 =new Hashtable<>();    
+	Hashtable<Object, Object> Eventd =new Hashtable<>();    
+
+	Socket clientSocket;
+	DataInputStream in;
+	DataOutputStream out;
+	public Connection (Socket aClientSocket) {
+    	try {
+			clientSocket = aClientSocket;
+			in = new DataInputStream(clientSocket.getInputStream());
+			out = new DataOutputStream(clientSocket.getOutputStream());		
+			this.start();
+     	} catch(IOException e) {System.out.println("Error Connection:"+e.getMessage());}
+	}
+
+	public void run(){
+		Event E;
+     	try { // an echo server
+     			
+     		while(true) {
+     			int choice = in.read();	
+				if (choice == 1) {
+	     			int newID = in.read();	
+	     			String newTitle = in.readUTF();	
+	     			String newDesc = in.readUTF();	
+	     			String newLoc = in.readUTF();	
+	     			String newSchedule = in.readUTF();	
+	     			int newAttendees = in.read();	
+	     			String newVIP = in.readUTF();	
+	     			int newbudget = in.read();	
+	     			
+					Event eventOne = new Event(newID, newTitle , newDesc, newLoc, newSchedule, newAttendees, newVIP, newbudget); 
+	     			Event1.put(newID,eventOne);  
+	     			Eventd.put(newSchedule, eventOne);
+	     			eventOne.printEvents();
+	     			//System.out.println(Event1);
+	     			
+
+		 		}
+				if (choice == 2) {
+	     			int DeleteID = in.read();	
+		 			Event1.remove(DeleteID);
+		 		}  
+				if (choice == 3) {
+					out.writeUTF(Event1.toString());
+					
+		 		} 
+				if (choice == 4) {
+	     			System.out.println("before");
+	     			ArrayList<Object> arrayS = new ArrayList<Object>( Eventd.values() );
+	     			//arrayS.printEvents();
+	 				//String date = in.readUTF();
+	 				out.writeUTF(arrayS.toString());
+	     			System.out.println("after");
+	     		//	System.out.println(Event1);
+
+		 		}  if (choice == 0) {
+		 		    System.exit(0);
+
+
+		 		} 
+     		}
+		
+			
+     	}catch (EOFException e){System.out.println("Error EOF:"+e.getMessage());
+     	} catch(IOException e) {System.out.println("Error readline:"+e.getMessage());
+     	} finally{ try {clientSocket.close();}catch (IOException e){/*close failed*/}}
+	}
+}
+
+
+              

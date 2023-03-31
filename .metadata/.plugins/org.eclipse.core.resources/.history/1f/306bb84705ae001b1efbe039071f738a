@@ -1,0 +1,66 @@
+import java.util.ArrayList;
+
+public class EMS {
+    int ID;
+    String Title;
+    String Description;
+    String Location;
+    String Schedule;
+    int Attendees;
+    String VIPGuest;
+    int Budget;
+   
+   public EMS(int ID, String Title, String Description, String Location, String Schedule, int Attendees, String VIPGuest, int Budget) {
+	      this.ID = ID;
+	      this.Title = Title;
+	      this.Description = Description;
+	      this.Location = Location;
+	      this.Schedule = Schedule;
+	      this.Attendees = Attendees;
+	      this.VIPGuest = VIPGuest;
+	      this.Budget = Budget;
+	     
+	      
+	   }
+   
+   @Override
+public String toString() {
+	return "EMS: ID=" + ID + ", Title=" + Title + ", Description=" + Description + ", Location=" + Location
+			+ ", Schedule=" + Schedule + ", Attendees=" + Attendees + ", VIPGuest=" + VIPGuest + ", Budget=" + Budget
+			;
+}
+
+public void EMSID(int EMSID) {
+	      ID = EMSID;
+	   }
+
+	   /* Assign the designation to the variable designation.*/
+	   public void EMSTitle(String EMSTitle) {
+	      Title = EMSTitle;
+	   } 
+//	    ArrayList<Object> arrlist = new ArrayList<Object>();
+//
+//	   public void returnloc(String l) {
+//		   for(int i = 0; i < arrlist.size(); i++){
+//		        Object dude = arrlist.get(i);
+//		        if(dude.equals(l)){
+//		        	Object.remove(i);
+//		            return dude;
+//		        }
+//	   }
+	   
+	   
+	   public void printEvents() {
+		      System.out.println("EMS ID:"+ ID );
+		      System.out.println("EMS Title:" + Title );
+		      System.out.println("Description:" + Description );
+		      System.out.println("Location:" + Location);
+		      System.out.println("Schedule:" + Schedule);
+		      System.out.println("Attendees:" + Attendees);
+		      System.out.println("VIP Guest:" + VIPGuest);
+		      System.out.println("Budget:" + Budget);
+		      System.out.println("-----------------------------");
+
+		   }
+
+}

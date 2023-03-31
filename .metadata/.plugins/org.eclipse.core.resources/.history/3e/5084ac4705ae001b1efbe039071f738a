@@ -1,0 +1,56 @@
+
+public class Event {
+    int ID;
+    String Title;
+    String Description;
+    String Location;
+    String Schedule;
+    int Attendees;
+    String VIPGuest;
+    int Budget;
+   
+   public Event(int ID, String Title, String Description, String Location, String Schedule, int Attendees, String VIPGuest, int Budget) {
+	      this.ID = ID;
+	      this.Title = Title;
+	      this.Description = Description;
+	      this.Location = Location;
+	      this.Schedule = Schedule;
+	      this.Attendees = Attendees;
+	      this.VIPGuest = VIPGuest;
+	      this.Budget = Budget;
+	     
+	      
+	   }
+   
+   @Override
+public String toString() {
+	return "Event: ID=" + ID + ", Title=" + Title + ", Description=" + Description + ", Location=" + Location
+			+ ", Schedule=" + Schedule + ", Attendees=" + Attendees + ", VIPGuest=" + VIPGuest + ", Budget=" + Budget
+			;
+}
+
+public void eventID(int eventID) {
+	      ID = eventID;
+	   }
+
+	   /* Assign the designation to the variable designation.*/
+	   public void eventTitle(String eventTitle) {
+	      Title = eventTitle;
+	   } 
+	   
+	   
+	   
+	   public void printEvents() {
+		      System.out.println("Event ID:"+ ID );
+		      System.out.println("Event Title:" + Title );
+		      System.out.println("Description:" + Description );
+		      System.out.println("Location:" + Location);
+		      System.out.println("Schedule:" + Schedule);
+		      System.out.println("Attendees:" + Attendees);
+		      System.out.println("VIP Guest:" + VIPGuest);
+		      System.out.println("Budget:" + Budget);
+		      System.out.println("-----------------------------");
+
+		   }
+
+}

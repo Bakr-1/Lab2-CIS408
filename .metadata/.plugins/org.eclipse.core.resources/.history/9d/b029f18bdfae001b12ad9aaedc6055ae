@@ -1,0 +1,157 @@
+import java.net.*;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.io.*;
+import java.util.stream.Collectors;
+
+public class Part1TCPServer {
+	public static void main(String args[]) {
+
+		// Event eventOne = new Event(001, "Sustainability", "Earth sustainability day",
+		// "NEC", "15th May 15:00", 360, "CEO", 600000);
+		// Event eventTwo = new Event(002, "Green Day", "Earth Environment day",
+		// "Exhibition Centre", "25th May 13:00", 720, "UNICEF", 1200000);
+
+		try {
+			int serverPort = 50000;// the server port
+			ServerSocket listenSocket = new ServerSocket(serverPort);
+			while (true) {
+				System.out.println("Server is ready and waiting for requests ... ");
+				Socket clientSocket = listenSocket.accept();
+				Connection c = new Connection(clientSocket); // Thread
+			}
+		} catch (IOException e) {
+			System.out.println("Error Listen socket:" + e.getMessage());
+		}
+
+	}
+}
+
+class Connection extends Thread {
+	HashMap<Integer,EMS> emsHashmap = new HashMap<>();
+	HashMap<Integer, EMS> emsADlocHashmap = new HashMap<>();
+	HashMap<Integer, EMS> emsAAlocHashmap = new HashMap<>();
+	HashMap<Integer, EMS> emsDateHashmap = new HashMap<>();
+
+
+	Socket clientSocket;
+	DataInputStream in;
+	DataOutputStream out;
+
+	public Connection(Socket aClientSocket) {
+		try {
+			clientSocket = aClientSocket;
+			in = new DataInputStream(clientSocket.getInputStream());
+			out = new DataOutputStream(clientSocket.getOutputStream());
+			this.start();
+		} catch (IOException e) {
+			System.out.println("Error Connection:" + e.getMessage());
+		}
+	}
+
+	public void run() {
+		try { // an echo server
+			//EMS EMSOne1 = new EMS(1, "a", "a", "AA", "11/11/2021", 1, "1",12000.0);
+			int N = 0;
+			//EMS ems = null;
+			while (true) {
+				int choice = in.read();
+				if (choice == 1) {
+				
+					EMS ems = new EMS(in);
+					emsHashmap.put(ems.ID, ems);
+					
+					//we want to create ems to it's correct location in the hashnmp 
+				    if (ems.getLocation().equals("AD")) {
+				    	emsADlocHashmap.put(ems.ID, ems);	
+				    } else if (ems.getLocation().equals("AA")){
+				    	emsAAlocHashmap.put(ems.ID, ems);	
+				    } else if (ems.getLocation().equals("AA")){
+				    	emsDateHashmap.put(ems.ID, ems);	
+				    }
+					N++;//
+					
+
+				}
+				if (choice == 2) {
+					int DeleteID = in.read();
+					// boolean check = arrlist.contains(DeleteID);
+					if (emsHashmap.containsKey(DeleteID)) {
+						EMS removed = emsHashmap.remove(DeleteID);
+						emsADlocHashmap.remove(DeleteID);
+						emsAAlocHashmap.remove(DeleteID);
+						//EMSD.remove(DeleteID);
+						out.writeUTF("removed "+removed  );
+					} else {
+						out.writeUTF("wrong ID");
+					}
+
+				}
+				if (choice == 3) {
+					int x = in.read();
+					if (x == 1) {
+						//EMS AD  = EMSOne.getEmsByLoc("AD",emsHashmap);
+						out.writeUTF(emsADlocHashmap.toString());
+
+					}
+					if (x == 2) {
+						out.writeUTF(emsAAlocHashmap.toString());
+					}
+				}
+
+				if (choice == 4) {
+					// ArrayList<Object> arrayS = new ArrayList<Object>( EMSd.values() );
+					// arrayS.printEvents();
+					String date = in.readUTF();
+					EMS ems= EMS.getEmsByDate(date,emsHashmap);
+//					EMS ems = new EMS(in);
+//					String date = in.readUTF();
+//					ems.getEmsByDate(date,emsHashmap);
+					out.writeUTF(ems==null?"There is no event on this date.":ems.toString());
+
+					// if(!arrayS.contains("AA")){
+
+					// }
+					// out.writeUTF(arrayS.toString());
+					/// System.out.println("after");
+					System.out.println(emsHashmap);
+
+				}
+				if (choice == 0) {
+					System.exit(0);
+
+				}
+			}
+
+		} catch (EOFException e) {
+			System.out.println("Error EOF:" + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Error readline:" + e.getMessage());
+		} finally {
+			try {
+				clientSocket.close();
+			} catch (IOException e) {
+				/* close failed */}
+		}
+	}
+
+	public List<String> getFilterOutput(List<String> lines, String filter) {
+		List<String> result = new ArrayList<>();
+		List<Integer> result2 = new ArrayList<>();
+
+		for (String line : lines) {
+			if (filter.equals(line)) { // we want filter
+				int ind = lines.indexOf(filter);
+				result2.add(ind);
+				result.add(line);
+			}
+		}
+		return result;
+	}
+
+	
+}

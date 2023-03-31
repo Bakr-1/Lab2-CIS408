@@ -1,0 +1,111 @@
+import java.net.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.io.*;
+
+public class BackupServer {
+	public static void main (String args[]) {
+		
+		int serverPort = 50000 ;
+		boolean cl = true ;
+		boolean bc = false ;
+		ArrayList<Integer> client = new ArrayList<Integer>();
+		DataInputStream inPrimary = null;
+		ServerSocket listenSocket1 = null;
+		
+		for(int r = 0; r<2; r++){
+		try{
+			
+				Socket s =  null;
+				
+				if (r==1) {
+					System.out.println("iam change false ");
+					 cl = false ;
+					 bc = true ;
+					 serverPort = 50004; // the server port
+					listenSocket1 = new ServerSocket(serverPort);
+				}
+			while(bc) {
+				System.out.println("iam here ");
+
+			    
+				
+				Socket clientSocket = listenSocket1.accept();
+				Connect c = new Connect(clientSocket,1,0);
+
+			}
+			
+			if (r==0) {
+				System.out.println("waiting for primary to connect ... ");
+				ServerSocket listenSocket = new ServerSocket(50001);
+				Socket PrimarySocket = listenSocket.accept();
+				 inPrimary = new DataInputStream(PrimarySocket.getInputStream());
+				System.out.println(" Connected with primary ... ");
+			}
+			while(cl) {
+
+			
+				int msg = inPrimary.read();
+				client.add(msg);
+				//clients.put(data[0], Integer.parseInt(data[1]));
+			System.out.println("Clients:" + client);
+			System.out.println(client.get(client.size()-1));
+			//System.out.println(clients.get("/127.0.0.1"));
+	
+				
+			
+			}
+		}catch(IOException e) {System.out.println("Server Failed Starting Over...");
+      	
+      	//stop here
+      	}
+		
+      
+      	String	serverIP = args[0];
+      	 serverPort = 50001;
+      	 
+	}
+}
+}
+
+	
+	
+
+	
+	class Connect extends Thread {
+		DataInputStream in;
+		DataOutputStream out;
+		Socket clientSocket;
+		int start, sum;
+		
+		public Connect (Socket aClientSocket, int start, int sum) {
+	    	try {
+				clientSocket = aClientSocket;
+				
+				this.start = start;
+				this.sum = sum;
+				in = new DataInputStream(clientSocket.getInputStream());
+				out = new DataOutputStream(clientSocket.getOutputStream());
+				
+				this.start();
+	     	} catch(IOException e) {System.out.println("Error Connection:"+e.getMessage());}
+		}
+
+		public void run(){
+	     	try { // an echo server
+	     		for(int i = 1; i<=100; i++){
+	     			int data = in.readInt();
+	     			System.out.println("Recieved:" + data + " from:" + clientSocket.getInetAddress()+ ":" +clientSocket.getPort());
+	     			sum += data;
+	     			out.writeInt(sum);
+	     			// read a line of data from the stream
+	     			
+	     		}
+			
+	     	}catch (EOFException e){System.out.println("Error EOF:"+e.getMessage());
+	     	} catch(IOException e) {System.out.println("Error readline:"+e.getMessage());
+	     	} finally{ try {clientSocket.close();}catch (IOException e){/*close failed*/}}
+		}
+	}
+
+         
